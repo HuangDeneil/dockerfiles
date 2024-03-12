@@ -1,0 +1,35 @@
+FROM python:3.8.10-slim
+
+USER root
+WORKDIR /root/
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# install ssh server 
+RUN apt-get update && apt-get install -y \
+  sudo vim tree curl git wget openssh-server  \
+  && rm -rf /var/lib/apt/lists/*
+
+# workdir for ssh
+RUN mkdir -p /run/sshd
+
+# generate server keys
+RUN ssh-keygen -A
+
+# allow root to login
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+RUN sudo service ssh restart
+
+# change root password to `foxconn`
+RUN echo 'root:foxconn' | chpasswd
+
+# expose ssh port
+EXPOSE 22
+
+## Install python package
+#COPY swiss-knife /root/
+COPY requirements.txt ./
+RUN python -m pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+
+# run ssh server
+CMD ["/usr/sbin/sshd", "-D", "-o", "ListenAddress=0.0.0.0"]
