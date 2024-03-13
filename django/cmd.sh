@@ -17,8 +17,8 @@ django-env
 
 
 
-
-docker compose up -d # 背景執行
+docker-compose down -v
+docker compose up -d 
 
 
 touch .env

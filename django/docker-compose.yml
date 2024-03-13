@@ -17,7 +17,7 @@ services:
     volumes:
       - /share/data/postgresql/data:/var/lib/postgresql/data
   web:
-    image: example_tenant:latest
+    image: django-env:latest
     build: .
     container_name: ${IMAGE_NAME}_web
     restart: always
@@ -25,7 +25,7 @@ services:
     ports:
         - "${WEB_PORT}:8000"
     volumes:
-      - /share/example_tenant:/root/app
+      - /share/django:/root/app
     depends_on:
       db:
         condition: service_healthy
