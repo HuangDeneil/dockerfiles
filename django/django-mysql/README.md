@@ -62,6 +62,9 @@ docker run -dit \
 -v '/share/data/mariadb:/var/lib/mysql' \
 docker.io/library/mariadb:10.4
 
+## start phpmyadmin
+docker run -dit --name phpmyadmin -e PMA_HOST=192.168.137.99 -p 8088:80 phpmyadmin:5
+
 
 docker run -dit \
 --name django-mysql-client-test \
