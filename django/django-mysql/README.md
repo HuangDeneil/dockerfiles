@@ -5,51 +5,23 @@ reference:
 
 
 ```bash
-
 # 使用當前目錄的 Dockerfile 建立容器
-docker build -t django-mysql-client . -f Dockerfile --no-cache
+docker build -t django-mysqlclient:1.0.0 . -f Dockerfile --no-cache
 ```
-
-## 建立 vue 專案
-```bash
-path="/share/django/keyboardmarket"
-
-if [ -z $path ]; then
-    echo "Please provide a path"
-    exit 1
-fi
-mkdir -p $path
-mkdir -p $path/backend
-mkdir -p $path/frontend
-
-
-cd $path/frontend
-npm install -g vue
-npm install -g @vue/cli
-
-## 創建專案
-vue create keyboardmarket
-# 選擇Default([Vue 2] babel,eslint)
-
-## 安裝router
-npm install --save vue-router
-```
-
 
 ## 啟動容器 under backgroud
 ```bash
 docker run -dit \
---name django-env \
--p 8000:8000 \
--v '/share/django:/opt/app' \
-django-env 
+--name django-mysql-client-test \
+-v '/share/django:/root' \
+-p 8080:8080 \
+django-mysqlclient:1.0.0 
 
-## serach images
+## serach mariadb images
 docker search mariadb
 
 ## pull images
 docker pull mariadb:10.4
-
 
 ## create data folder for backup sql data
 if [ ! -d "/share/data/mariadb" ]; then mkdir -p /share/data/mariadb ;fi
@@ -64,17 +36,6 @@ docker.io/library/mariadb:10.4
 
 ## start phpmyadmin
 docker run -dit --name phpmyadmin -e PMA_HOST=192.168.137.99 -p 8088:80 phpmyadmin:5
-
-
-docker run -dit \
---name django-mysql-client-test \
--v '/share/django:/root' \
--p 8080:8080 \
-django-mysql-client
-
-
-docker run -dit --name ubuntu22-build-test -v '/share/django:/root' -p 8080:8080 ubuntu:22.04
-
 
 ```
 

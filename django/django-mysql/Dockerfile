@@ -13,10 +13,7 @@ RUN apt-get update -y
 RUN apt-get install curl vim nano tree -y
 
 # Install python 3.10
-RUN apt-get install python3.10 python3.10-dev -y
-
-# Install Node.js
-RUN apt-get install npm -y
+RUN apt-get install python3.10 python3.10-dev pkg-config gcc -y
 
 # Install mariadb-client
 RUN apt-get -y install mariadb-client libmariadb-dev 
@@ -29,7 +26,7 @@ RUN python3.10 get-pip.py
 RUN mkdir -p /root
 RUN mkdir -p /opt/app
 COPY ./requirements.txt /root
-WORKDIR /opt/app
+WORKDIR /root
 
 RUN pip install -r /root/requirements.txt
 
