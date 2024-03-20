@@ -45,3 +45,8 @@ sudo rm /usr/local/bin/docker-compose && sudo rm /usr/bin/docker-compose
 ## remove (install with rpm)
 sudo apt-get -y remove docker-compose && sudo apt-get -y autoremove
 ```
+
+## Build docker image testing
+```bash
+docker run -dit --name ubuntu22-build-test -v '/share/django:/root' -p 8080:8080 ubuntu:22.04
+```
