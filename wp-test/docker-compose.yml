@@ -21,6 +21,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin:5  # https://hub.docker.com/_/phpmyadmin
+    restart: always
     environment:
       # https://docs.phpmyadmin.net/en/latest/setup.html#docker-environment-variables
       PMA_HOST: ${LAN_IP}
@@ -34,6 +35,7 @@ services:
   
   db:
     image: mariadb:10.4 # https://hub.docker.com/_/mysql/ - or mariadb https://hub.docker.com/_/mariadb
+    restart: always
     ports:
       - 3306:3306 
     volumes:
