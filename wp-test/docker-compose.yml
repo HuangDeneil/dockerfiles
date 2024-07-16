@@ -4,10 +4,11 @@ services:
   
   wordpress:
     image: wordpress:latest # https://hub.docker.com/_/wordpress/
+    container_name: wp-wordpress
     restart: always
     # network_mode: host
     ports:
-      - 80:80 # change ip if required
+      - ${WP_PORT}:80 # change ip if required
     volumes:
       - ./config/wp_php.ini:/usr/local/etc/php/conf.d/conf.ini
       - ./wp-app:/var/www/html # Full wordpress project
@@ -21,6 +22,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin:5  # https://hub.docker.com/_/phpmyadmin
+    container_name: wp-phpmyadmin
     restart: always
     environment:
       # https://docs.phpmyadmin.net/en/latest/setup.html#docker-environment-variables
@@ -31,10 +33,11 @@ services:
     depends_on:
       - db
     ports:
-      - 8080:80
+      - ${PHPMyAdmin_PORT}:80
   
   db:
-    image: mariadb:10.4 # https://hub.docker.com/_/mysql/ - or mariadb https://hub.docker.com/_/mariadb
+    image: mariadb:10.6 
+    container_name: wp-db
     restart: always
     ports:
       - 3306:3306 

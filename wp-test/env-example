@@ -1,5 +1,5 @@
-
+LAN_IP=192.168.137.199
+WP_PORT=80
+PHPMyAdmin_PORT=8080
 DB_ROOT_PASSWORD=password
 DB_NAME=wordpress
-Path=$(pwd)
-LAN_IP=192.168.0.15
