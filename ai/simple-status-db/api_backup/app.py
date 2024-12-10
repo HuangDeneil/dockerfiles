@@ -11,7 +11,8 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS nodes (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     node_id TEXT,
                     status TEXT,
-                    timestamp TEXT
+                    timestamp DEFAULT CURRENT_TIMESTAMP,
+                    notes TEXT
                 )''')
 conn.commit()
 conn.close()
@@ -26,8 +27,12 @@ def add_node_status():
         data = request.get_json()
         node_id = data['node_id']
         status = data['status']
+        try:
+            notes = data['notes']
+        except:
+            notes = ""
         
-        cursor.execute("INSERT INTO nodes (node_id, status, timestamp) VALUES (?, ?, datetime('now'))", (node_id, status))
+        cursor.execute("INSERT INTO nodes (node_id, status, timestamp, notes) VALUES (?, ?, datetime('now'), ?)", (node_id, status, notes))
         conn.commit()
         
         return jsonify({'message': 'Node status added successfully'}), 201
@@ -37,7 +42,7 @@ def add_node_status():
         cursor.execute("SELECT * FROM nodes ")
         result = cursor.fetchall()
         if result:
-            columns = ['index', 'name', 'status', 'time']
+            columns = ['index', 'name', 'status', 'time', 'notes']
             data = []
             for row in result:
                 # 將每個元組轉換為字典
@@ -62,7 +67,7 @@ def get_or_delete_node_status(node_id):
         cursor.execute("SELECT * FROM nodes WHERE node_id=?", (node_id,))
         result = cursor.fetchone()
         if result:
-            return jsonify({'index': result[0], 'node_id': result[1], 'status': result[2], 'timestamp': result[3]})
+            return jsonify({'index': result[0], 'node_id': result[1], 'status': result[2], 'timestamp': result[3], 'notes': result[4]}), 200
         else:
             return jsonify({'message': 'Node not found'}), 404
 

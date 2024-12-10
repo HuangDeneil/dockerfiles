@@ -14,7 +14,12 @@ docker-compose up -d
 ## node1
 curl -X POST http://localhost:5000/nodes \
 -H "Content-Type: application/json" \
--d '{"node_id": "node1", "status": "online"}' 
+-d '
+{
+    "node_id": "node1", 
+    "status": "online",
+    "notes": ""
+}' 
 
 # node2
 curl -X POST http://localhost:5000/nodes \
