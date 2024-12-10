@@ -47,10 +47,6 @@ def add_node_status():
             # 將 JSON 資料轉換為字串並輸出
             json_data = json.dumps(data, indent=4)
             return (json_data), 200
-            
-            # for data in result:
-            #     # return jsonify({result})
-            #     return jsonify({'node_id': data[1], 'status': data[2], 'timestamp': data[3]})
 
         else:
             return jsonify({'message': 'Node not found'}), 404
