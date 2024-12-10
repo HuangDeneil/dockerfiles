@@ -1,0 +1,27 @@
+FROM python:3.9-slim-buster
+
+RUN mkdir -p /app
+RUN mkdir -p /api_backup
+WORKDIR /app
+
+# COPY ./api_backup/app.py /app/app.py
+# RUN ln -s /api_backup/app.py /app/app.py
+# RUN ln -s /api_backup/deployment_status.db /app/deployment_status.db
+
+
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+CMD ["python", "app.py"]
+
+# FROM python:3.11-slim-buster
+
+# RUN mkdir -p /app
+# WORKDIR /app
+# COPY ./app.py /app/app.py
+
+# COPY requirements.txt requirements.txt
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]
+

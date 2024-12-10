@@ -1,0 +1,12 @@
+version: '2.29.1'
+
+services:
+  status-record-db:
+    image: status-record-api:3.9-slim-buster
+    ports:
+      - 5000:5000
+    volumes:
+      # - ./deployment_status.db:/app/deployment_status.db
+      # - "./api_backup/:/api_backup/:rw"
+      - "./api_backup/:/app/:rw"
+
