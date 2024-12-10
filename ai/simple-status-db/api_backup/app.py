@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import sqlite3
+import json
 
 app = Flask(__name__)
 
@@ -16,19 +17,45 @@ conn.commit()
 conn.close()
 
 # 定義 API 路由
-@app.route('/nodes', methods=['POST'])
+@app.route('/nodes', methods=['GET', 'POST'])
 def add_node_status():
-    data = request.get_json()
-    node_id = data['node_id']
-    status = data['status']
-
     conn = sqlite3.connect('node_status.db')
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO nodes (node_id, status, timestamp) VALUES (?, ?, datetime('now'))", (node_id, status))
-    conn.commit()
-    conn.close()
+    
+    if request.method == 'POST':
+        data = request.get_json()
+        node_id = data['node_id']
+        status = data['status']
+        
+        cursor.execute("INSERT INTO nodes (node_id, status, timestamp) VALUES (?, ?, datetime('now'))", (node_id, status))
+        conn.commit()
+        
+        return jsonify({'message': 'Node status added successfully'}), 201
 
-    return jsonify({'message': 'Node status added successfully'}), 201
+    elif request.method == 'GET':
+        
+        cursor.execute("SELECT * FROM nodes ")
+        result = cursor.fetchall()
+        if result:
+            columns = ['index', 'name', 'status', 'time']
+            data = []
+            for row in result:
+                # 將每個元組轉換為字典
+                record = dict(zip(columns, row))
+                data.append(record)
+
+            # 將 JSON 資料轉換為字串並輸出
+            json_data = json.dumps(data, indent=4)
+            return (json_data), 200
+            
+            # for data in result:
+            #     # return jsonify({result})
+            #     return jsonify({'node_id': data[1], 'status': data[2], 'timestamp': data[3]})
+
+        else:
+            return jsonify({'message': 'Node not found'}), 404
+    
+    conn.close()
 
 @app.route('/nodes/<node_id>', methods=['GET', 'DELETE'])
 def get_or_delete_node_status(node_id):

@@ -8,5 +8,5 @@ services:
     volumes:
       # - ./deployment_status.db:/app/deployment_status.db
       # - "./api_backup/:/api_backup/:rw"
-      - "./api_backup/:/app/:rw"
+      - "./api_backup/:/app/"
 
