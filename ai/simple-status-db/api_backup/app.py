@@ -32,10 +32,15 @@ def add_node_status():
         except:
             notes = ""
         
-        cursor.execute("INSERT INTO nodes (node_id, status, timestamp, notes) VALUES (?, ?, datetime('now'), ?)", (node_id, status, notes))
+        cursor.execute("SELECT * FROM nodes WHERE node_id=?", (node_id,))
+        result = cursor.fetchone()
+        if result:
+            cursor.execute("UPDATE nodes SET status = ?, timestamp = datetime('now'), notes = ? WHERE node_id = ?", (status, notes, node_id))
+        else:
+            cursor.execute("INSERT INTO nodes (node_id, status, timestamp, notes) VALUES (?, ?, datetime('now'), ?)", (node_id, status, notes))
         conn.commit()
         
-        return jsonify({'message': 'Node status added successfully'}), 201
+        return jsonify({'message': 'Node status update successfully'}), 201
 
     elif request.method == 'GET':
         
@@ -54,7 +59,7 @@ def add_node_status():
             return (json_data), 200
 
         else:
-            return jsonify({'message': 'Node not found'}), 404
+            return jsonify({'message': 'No any node found'}), 404
     
     conn.close()
 
