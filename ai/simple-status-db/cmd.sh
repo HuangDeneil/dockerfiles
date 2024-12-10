@@ -1,10 +1,4 @@
 
-docker run -dit --name python-test python:3.9-slim-buster
-
-
-# docker build . -t status-record-api:3.11-slim-buster
-
-
 docker build . -t status-record-api:3.9-slim-buster
 
 docker-compose up -d
