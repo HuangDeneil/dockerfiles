@@ -87,5 +87,22 @@ def get_or_delete_node_status(node_id):
 
     conn.close()
 
+@app.route('/nodes/status/<node_id>', methods=['GET'])
+def get_node_status_only(node_id):
+    conn = sqlite3.connect('node_status.db')
+    cursor = conn.cursor()
+
+    if request.method == 'GET':
+        cursor.execute("SELECT * FROM nodes WHERE node_id=?", (node_id,))
+        result = cursor.fetchone()
+        if result:
+            
+            return (str(result[2])), 200
+        else:
+            return jsonify({'message': 'Node not found'}), 404
+    conn.close()
+
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
