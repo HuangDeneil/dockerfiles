@@ -65,9 +65,18 @@ def get_or_delete_node_status(node_id):
 
     if request.method == 'GET':
         cursor.execute("SELECT * FROM nodes WHERE node_id=?", (node_id,))
-        result = cursor.fetchone()
+        result = cursor.fetchall()
         if result:
-            return jsonify({'index': result[0], 'node_id': result[1], 'status': result[2], 'timestamp': result[3], 'notes': result[4]}), 200
+            columns = ['index', 'name', 'status', 'time', 'notes']
+            data = []
+            for row in result:
+                # 將每個元組轉換為字典
+                record = dict(zip(columns, row))
+                data.append(record)
+
+            # 將 JSON 資料轉換為字串並輸出
+            json_data = json.dumps(data, indent=4)
+            return (json_data), 200
         else:
             return jsonify({'message': 'Node not found'}), 404
 
