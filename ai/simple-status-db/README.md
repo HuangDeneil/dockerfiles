@@ -42,10 +42,6 @@ docker compose down
 | **status**    | $`\textcolor{red}{\text{yes}}`$    | 相要更動的狀態 (可填寫任意文字，可覆寫)    | OS_install_done    |
 | **notes**     | $`\textcolor{red}{\text{no}}`$     | 備註 (可填寫任意文字或error msg)          |                   |
 
-| ID | Hostname                   | Model               | Manage IP     | BMC IP        | Status   |
-+----+----------------------------+---------------------+---------------+---------------+----------+
-|  2 | lh-testbed-control-001     | FOXCONN R2-1206R-PA | 10.157.73.161 | 10.157.72.161 | deployed |
-|  3 | lh-testbed-control-002     | FOXCONN R2-1206R-PA | 10.157.73.162 | 10.157.72.162 | deployed |
 
 ## API 操作資料庫
 
