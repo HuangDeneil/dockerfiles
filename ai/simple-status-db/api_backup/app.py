@@ -11,7 +11,7 @@ talbe_name="nodes"
 db_name="node_status.db"
 table_define_json = {
     "id" : "INTEGER PRIMARY KEY AUTOINCREMENT",
-    "node_name" : "TEXT",
+    "Hostname" : "TEXT",
     "status" : "TEXT",
     "timestamp" : "DEFAULT CURRENT_TIMESTAMP",
     "notes" : "TEXT"
@@ -27,19 +27,19 @@ def add_node_status():
     
     if request.method == 'POST':
         data = request.get_json()
-        node_name = data['node_name']
+        Hostname = data['Hostname']
         status = data['status']
         try:
             notes = data['notes']
         except:
             notes = ""
         
-        cursor.execute("SELECT * FROM nodes WHERE node_name=?", (node_name,))
+        cursor.execute("SELECT * FROM nodes WHERE Hostname=?", (Hostname,))
         result = cursor.fetchone()
         if result:
-            cursor.execute("UPDATE nodes SET status = ?, timestamp = datetime('now'), notes = ? WHERE node_name = ?", (status, notes, node_name))
+            cursor.execute("UPDATE nodes SET status = ?, timestamp = datetime('now'), notes = ? WHERE Hostname = ?", (status, notes, Hostname))
         else:
-            cursor.execute("INSERT INTO nodes (node_name, status, timestamp, notes) VALUES (?, ?, datetime('now'), ?)", (node_name, status, notes))
+            cursor.execute("INSERT INTO nodes (Hostname, status, timestamp, notes) VALUES (?, ?, datetime('now'), ?)", (Hostname, status, notes))
         conn.commit()
         
         return jsonify({'message': 'Node status update successfully'}), 201
@@ -49,7 +49,7 @@ def add_node_status():
         cursor.execute("SELECT * FROM nodes ")
         result = cursor.fetchall()
         if result:
-            columns = ['index', 'name', 'status', 'time', 'notes']
+            columns = ['ID', 'Hostname', 'status', 'update time', 'notes']
             data = []
             for row in result:
                 # 將每個元組轉換為字典
@@ -65,16 +65,16 @@ def add_node_status():
     
     conn.close()
 
-@app.route('/nodes/<node_name>', methods=['GET', 'DELETE'])
-def get_or_delete_node_status(node_name):
+@app.route('/nodes/<Hostname>', methods=['GET', 'DELETE'])
+def get_or_delete_node_status(Hostname):
     conn = sqlite3.connect('node_status.db')
     cursor = conn.cursor()
 
     if request.method == 'GET':
-        cursor.execute("SELECT * FROM nodes WHERE node_name=?", (node_name,))
+        cursor.execute("SELECT * FROM nodes WHERE Hostname=?", (Hostname,))
         result = cursor.fetchall()
         if result:
-            columns = ['index', 'name', 'status', 'time', 'notes']
+            columns = ['ID', 'Hostname', 'status', 'update time', 'notes']
             data = []
             for row in result:
                 # 將每個元組轉換為字典
@@ -88,19 +88,19 @@ def get_or_delete_node_status(node_name):
             return jsonify({'message': 'Node not found'}), 404
 
     elif request.method == 'DELETE':
-        cursor.execute("DELETE FROM nodes WHERE node_name=?", (node_name,))
+        cursor.execute("DELETE FROM nodes WHERE Hostname=?", (Hostname,))
         conn.commit()
         return jsonify({'message': 'Node status deleted successfully'}), 200
 
     conn.close()
 
-@app.route('/nodes/status/<node_name>', methods=['GET'])
-def get_node_status_only(node_name):
+@app.route('/nodes/status/<Hostname>', methods=['GET'])
+def get_node_status_only(Hostname):
     conn = sqlite3.connect('node_status.db')
     cursor = conn.cursor()
 
     if request.method == 'GET':
-        cursor.execute("SELECT * FROM nodes WHERE node_name=?", (node_name,))
+        cursor.execute("SELECT * FROM nodes WHERE Hostname=?", (Hostname,))
         result = cursor.fetchone()
         if result:
             
