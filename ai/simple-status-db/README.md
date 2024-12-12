@@ -3,11 +3,10 @@
 ```bash
 .
 ├── api_backup/
-│   └── app.py
+│   └── app.py          ## SQLite + Flask 
 ├── docker-compose.yml
 ├── dockerfile
 └── requirements.txt
-
 ```
 
 ## 建立image
@@ -32,11 +31,22 @@ docker compose restart
 docker compose down
 ```
 
+## 目前預設 SQLite 收錄內容
+- Table名稱: `nodes`
+
+|  **column**   | **Required**                       |  **Description**                      |     **Example**  |
+|---------------|------------------------------------|----------------------------------------|------------------|
+| **index**     | $`\textcolor{red}{\text{no}}`$     | 系統給予的index                         |     0       |
+| **timestamp** | $`\textcolor{red}{\text{no}}`$     | 填寫當下的系統時間 (API自動填寫，可覆寫)  | 2024-12-10 16:12:42 |
+| **node_id**   | $`\textcolor{red}{\text{yes}}`$    | node名稱                                | fixoignitenode-1        |
+| **status**    | $`\textcolor{red}{\text{yes}}`$    | 相要更動的狀態 (可填寫任意文字，可覆寫)    | OS_install_done    |
+| **notes**     | $`\textcolor{red}{\text{no}}`$     | 備註 (可填寫任意文字或error msg)          |                   |
+
+
 ## API 操作資料庫
 
 ### POST 新增狀態更新
 ```bash
-
 # POST 新增節點狀態
 ## node1
 curl -X POST http://localhost:5000/nodes \
@@ -51,8 +61,14 @@ curl -X POST http://localhost:5000/nodes \
 # node2
 curl -X POST http://localhost:5000/nodes \
 -H "Content-Type: application/json" \
--d '{"node_id": "node2", "status": "online"}' 
+-d '
+{
+    "node_id": "node2", 
+    "status": "online",
+    "notes": ""
+}' 
 ```
+
 
 ### GET 查詢節點狀態
 ```bash
