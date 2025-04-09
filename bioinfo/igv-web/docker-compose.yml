@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  webapp-dev:
+    # image: dceoy/igv-webapp:latest
+    image: deneil/igv-webapp:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+      ## Dockerfile ref. : https://github.com/dceoy/docker-bio/blob/master/igv-webapp/Dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - "./data/resources/:/opt/igv-webapp/dist/resources:rw"
+    
+  file-server:
+    image: deneil/file-server:v1.0.0
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    restart: always
+    command: [nginx-debug, '-g', 'daemon off;']
+    volumes:
+        - "./data:/downloads:ro"
+    ports:
+        - "8080:80"
+
