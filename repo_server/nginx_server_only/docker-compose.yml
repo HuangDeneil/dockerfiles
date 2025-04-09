@@ -1,20 +1,11 @@
 version: '2.29.1'
 
-# services: 
-#     server:
-#         build:
-#             context: .
-#             dockerfile: nginx.Dockerfile
-#         restart: always
-#         command: [nginx-debug, '-g', 'daemon off;']
-#         volumes:
-#             - "./mirror:/downloads:ro"
-#         ports:
-#             - "8080:80"
-
 services: 
     server:
         image: nginx-for-rpm:1.27.0-alpine
+        build:
+            context: .
+            dockerfile: nginx.Dockerfile
         restart: always
         command: [nginx-debug, '-g', 'daemon off;']
         volumes:
