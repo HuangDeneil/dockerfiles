@@ -6,10 +6,16 @@ services:
         build:
             context: .
             dockerfile: nginx.Dockerfile
+        container_name: rpm-server
         restart: always
         command: [nginx-debug, '-g', 'daemon off;']
         volumes:
             - "/var/www/repos/:/downloads:ro"
         ports:
             - "8080:80"
+        healthcheck:
+            test: ["CMD-SHELL", "apk add --no-cache curl && curl -f http://localhost"]
+            interval: 5s
+            timeout: 3s
+            retries: 3
 
