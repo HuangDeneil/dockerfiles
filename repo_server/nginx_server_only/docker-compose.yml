@@ -1,8 +1,8 @@
-version: '2.29.1'
+# version: '2.29.1'
 
 services: 
     server:
-        image: nginx-for-rpm:1.27.0-alpine
+        image: registry.fixo-cloud.iaas/nginx-for-rpm:1.27.0-alpine
         build:
             context: .
             dockerfile: nginx.Dockerfile
