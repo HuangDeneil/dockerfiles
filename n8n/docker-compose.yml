@@ -1,14 +1,14 @@
 
 services:
     n8n:
-        image: n8n-env:1.112.6
+        image: n8n-env:1.119.2
         build:
             context: .
             dockerfile: n8n.Dockerfile
         restart: always
         container_name: n8n
         ports:
-          - "5678:5678"
+          - "80:80"
         environment:
           - DB_TYPE=postgresdb
           - DB_POSTGRESDB_HOST=postgres 
@@ -21,6 +21,12 @@ services:
           - N8N_USER_EMAIL=${N8N_INITIAL_USER}
           - N8N_USER_PASSWORD=${N8N_USER_PASSWORD}
           - N8N_ENCRYPTION_KEY=${N8N_SECRET_KEY}
+          - N8N_EDITOR_BASE_URL=${N8N_EDITOR_BASE_URL}
+          - N8N_HOST=${N8N_HOST}
+          - N8N_PORT=${N8N_PORT}
+          - WEBHOOK_URL=${WEBHOOK_URL}
+          - N8N_PROXY_HOPS=${N8N_PROXY_HOPS}
+          - N8N_PROTOCOL=${N8N_PROTOCOL}
           - TZ=Asia/Taipei
         
         depends_on:
