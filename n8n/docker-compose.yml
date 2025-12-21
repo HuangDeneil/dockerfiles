@@ -1,7 +1,7 @@
 
 services:
     n8n:
-        image: n8n-env:1.119.2
+        image: n8n-env:1.123.1
         build:
             context: .
             dockerfile: n8n.Dockerfile
