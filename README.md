@@ -1,5 +1,8 @@
 # dockerfiles
 
+## Documentation
+
+- [diskimage-builder vs Oz Comparison](docs/diskimage-builder-vs-oz.md) - 比較 OpenStack diskimage-builder 與 Oz 的差異
 
 ## centos9 dokcer installation
 
