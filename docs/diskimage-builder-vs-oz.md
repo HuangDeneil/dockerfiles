@@ -281,6 +281,11 @@ oz-install -d3 -u my-rocky9.ks rocky9.tdl
 # - 作為 ISO 映像刻錄光碟
 ```
 
+**安全性注意事項**：
+- 範例中使用明文密碼僅供示範，生產環境請使用 `rootpw --iscrypted` 搭配加密後的密碼
+- 如果檔案伺服器支援 HTTPS，建議使用 HTTPS 並加上錯誤處理（如 `curl -f -o ...`）
+- 對於內部網路環境，HTTP 可能是可接受的選擇，但需評估安全風險
+
 **為什麼不選擇 diskimage-builder？**
 
 diskimage-builder 在此場景下的限制：
@@ -580,6 +585,11 @@ oz-install -d3 -u my-rocky9.ks rocky9.tdl
 # - PXE network installation
 # - Burning to ISO for CD/DVD
 ```
+
+**Security Notes**:
+- The plaintext password in the example is for demonstration only; use `rootpw --iscrypted` with encrypted passwords in production
+- If your file server supports HTTPS, use HTTPS with error handling (e.g., `curl -f -o ...`)
+- For internal network environments, HTTP may be acceptable, but evaluate security risks accordingly
 
 **Why Not diskimage-builder?**
 
