@@ -158,6 +158,137 @@ oz-install -d3 -u my-kickstart.ks centos.tdl
 - 主要使用紅帽系發行版
 - 需要完整的 anaconda 安裝功能
 
+## 實際使用案例
+
+### 案例：建立客製化 Rocky Linux 9 實體機安裝映像
+
+**需求場景**:
+- 目標：建立客製化的 Rocky Linux 9 映像
+- 用途：安裝在實體機硬碟上
+- 客製化內容：
+  - RPM 套件安裝
+  - 客製化檔案預先放置在映像中
+- 環境限制：只能連線到自建的 RPM 鏡像站和檔案伺服器
+
+**建議工具：Oz**
+
+**推薦理由**:
+
+1. **完整的 Kickstart 支援**
+   - 可以在 kickstart 文件中指定自建的 RPM 鏡像站
+   - 支援所有 anaconda 安裝選項，與實體機安裝流程一致
+
+2. **自訂 RPM 來源**
+   ```bash
+   # 在 kickstart 文件中設定自建鏡像站
+   url --url=http://your-mirror-server.local/rocky/9/BaseOS/x86_64/os/
+   repo --name="AppStream" --baseurl=http://your-mirror-server.local/rocky/9/AppStream/x86_64/os/
+   repo --name="custom" --baseurl=http://your-mirror-server.local/custom-rpms/
+   ```
+
+3. **預先放置客製化檔案**
+   ```bash
+   # 在 kickstart 的 %post 段落中
+   %post
+   # 從檔案伺服器下載客製化檔案
+   curl http://your-file-server.local/custom-configs/app.conf -o /etc/app.conf
+   curl http://your-file-server.local/scripts/init-script.sh -o /usr/local/bin/init-script.sh
+   chmod +x /usr/local/bin/init-script.sh
+   
+   # 或直接在 kickstart 中內嵌檔案內容
+   cat > /etc/custom-config.conf <<EOF
+   # 您的客製化配置
+   EOF
+   %end
+   ```
+
+4. **適合實體機部署**
+   - Oz 產生的映像與標準 anaconda 安裝流程完全相同
+   - 可以直接用於實體機安裝，無需額外調整
+
+**完整範例**:
+
+```bash
+# 1. 建立 kickstart 文件（my-rocky9.ks）
+cat > my-rocky9.ks <<'EOF'
+install
+text
+lang en_US.UTF-8
+keyboard us
+network --bootproto=dhcp --hostname=rocky9-custom
+
+# 使用自建鏡像站
+url --url=http://your-mirror-server.local/rocky/9/BaseOS/x86_64/os/
+repo --name="AppStream" --baseurl=http://your-mirror-server.local/rocky/9/AppStream/x86_64/os/
+repo --name="custom" --baseurl=http://your-mirror-server.local/custom-rpms/
+
+rootpw --plaintext yourpassword
+timezone Asia/Taipei
+
+bootloader --location=mbr
+zerombr
+clearpart --all --initlabel
+autopart
+
+# 安裝客製化套件
+%packages
+@core
+@standard
+httpd
+nginx
+custom-package-1
+custom-package-2
+%end
+
+# 客製化配置
+%post --log=/root/ks-post.log
+# 從檔案伺服器下載客製化檔案
+curl -o /etc/app.conf http://your-file-server.local/configs/app.conf
+curl -o /usr/local/bin/setup.sh http://your-file-server.local/scripts/setup.sh
+chmod +x /usr/local/bin/setup.sh
+
+# 執行客製化設定
+systemctl enable httpd
+systemctl enable nginx
+
+# 建立客製化使用者
+useradd -m -s /bin/bash customuser
+%end
+EOF
+
+# 2. 建立 TDL 模板（rocky9.tdl）
+cat > rocky9.tdl <<'EOF'
+<template>
+  <name>rocky9-custom</name>
+  <os>
+    <name>Rocky-9</name>
+    <version>9</version>
+    <arch>x86_64</arch>
+    <install type='url'>
+      <url>http://your-mirror-server.local/rocky/9/BaseOS/x86_64/os/</url>
+    </install>
+  </os>
+  <description>Rocky Linux 9 Custom Image for Physical Deployment</description>
+</template>
+EOF
+
+# 3. 使用 Oz 建立映像
+oz-install -d3 -u my-rocky9.ks rocky9.tdl
+
+# 4. 生成的映像可用於：
+# - 直接寫入 USB 安裝碟
+# - 透過 PXE 網路安裝
+# - 作為 ISO 映像刻錄光碟
+```
+
+**為什麼不選擇 diskimage-builder？**
+
+diskimage-builder 在此場景下的限制：
+1. 不直接支援 kickstart，需要重寫所有配置邏輯為 element 腳本
+2. 需要學習 element 系統，增加學習成本
+3. 如果已經有 kickstart 經驗，無法直接重用知識
+4. 對於實體機安裝，Oz 的標準安裝流程更可靠
+
 ## 總結
 
 **主要差異回答**:
@@ -326,6 +457,137 @@ oz-install -d3 -u my-kickstart.ks centos.tdl
 - Need to build images following standard installation procedures
 - Primarily using Red Hat-based distributions
 - Need full anaconda installation functionality
+
+## Real-World Use Case
+
+### Use Case: Building a Custom Rocky Linux 9 Image for Physical Machine Deployment
+
+**Scenario Requirements**:
+- Goal: Create a customized Rocky Linux 9 image
+- Purpose: Installation on physical machine hard drives
+- Customization needs:
+  - RPM package installation
+  - Pre-configured custom files included in the image
+- Environment constraints: Can only connect to self-hosted RPM mirror and file server
+
+**Recommended Tool: Oz**
+
+**Reasons for Recommendation**:
+
+1. **Full Kickstart Support**
+   - Can specify custom RPM mirror in kickstart file
+   - Supports all anaconda installation options, consistent with physical installation process
+
+2. **Custom RPM Sources**
+   ```bash
+   # Configure custom mirror in kickstart file
+   url --url=http://your-mirror-server.local/rocky/9/BaseOS/x86_64/os/
+   repo --name="AppStream" --baseurl=http://your-mirror-server.local/rocky/9/AppStream/x86_64/os/
+   repo --name="custom" --baseurl=http://your-mirror-server.local/custom-rpms/
+   ```
+
+3. **Pre-placing Custom Files**
+   ```bash
+   # In kickstart %post section
+   %post
+   # Download custom files from file server
+   curl http://your-file-server.local/custom-configs/app.conf -o /etc/app.conf
+   curl http://your-file-server.local/scripts/init-script.sh -o /usr/local/bin/init-script.sh
+   chmod +x /usr/local/bin/init-script.sh
+   
+   # Or embed file content directly in kickstart
+   cat > /etc/custom-config.conf <<EOF
+   # Your custom configuration
+   EOF
+   %end
+   ```
+
+4. **Suitable for Physical Deployment**
+   - Images produced by Oz are identical to standard anaconda installation
+   - Can be used directly for physical machine installation without additional adjustments
+
+**Complete Example**:
+
+```bash
+# 1. Create kickstart file (my-rocky9.ks)
+cat > my-rocky9.ks <<'EOF'
+install
+text
+lang en_US.UTF-8
+keyboard us
+network --bootproto=dhcp --hostname=rocky9-custom
+
+# Use custom mirror
+url --url=http://your-mirror-server.local/rocky/9/BaseOS/x86_64/os/
+repo --name="AppStream" --baseurl=http://your-mirror-server.local/rocky/9/AppStream/x86_64/os/
+repo --name="custom" --baseurl=http://your-mirror-server.local/custom-rpms/
+
+rootpw --plaintext yourpassword
+timezone Asia/Taipei
+
+bootloader --location=mbr
+zerombr
+clearpart --all --initlabel
+autopart
+
+# Install custom packages
+%packages
+@core
+@standard
+httpd
+nginx
+custom-package-1
+custom-package-2
+%end
+
+# Custom configuration
+%post --log=/root/ks-post.log
+# Download custom files from file server
+curl -o /etc/app.conf http://your-file-server.local/configs/app.conf
+curl -o /usr/local/bin/setup.sh http://your-file-server.local/scripts/setup.sh
+chmod +x /usr/local/bin/setup.sh
+
+# Execute custom setup
+systemctl enable httpd
+systemctl enable nginx
+
+# Create custom user
+useradd -m -s /bin/bash customuser
+%end
+EOF
+
+# 2. Create TDL template (rocky9.tdl)
+cat > rocky9.tdl <<'EOF'
+<template>
+  <name>rocky9-custom</name>
+  <os>
+    <name>Rocky-9</name>
+    <version>9</version>
+    <arch>x86_64</arch>
+    <install type='url'>
+      <url>http://your-mirror-server.local/rocky/9/BaseOS/x86_64/os/</url>
+    </install>
+  </os>
+  <description>Rocky Linux 9 Custom Image for Physical Deployment</description>
+</template>
+EOF
+
+# 3. Build image using Oz
+oz-install -d3 -u my-rocky9.ks rocky9.tdl
+
+# 4. The generated image can be used for:
+# - Directly writing to USB installation media
+# - PXE network installation
+# - Burning to ISO for CD/DVD
+```
+
+**Why Not diskimage-builder?**
+
+Limitations of diskimage-builder for this scenario:
+1. Does not directly support kickstart; requires rewriting all configuration logic as element scripts
+2. Requires learning the element system, increasing learning curve
+3. Cannot reuse existing kickstart knowledge and experience
+4. For physical machine installation, Oz's standard installation process is more reliable
 
 ## Summary
 
